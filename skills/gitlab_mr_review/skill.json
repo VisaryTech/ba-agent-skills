@@ -1,0 +1,17 @@
+{
+  "name": "gitlab_mr_review",
+  "description": "GitLab Merge Request code review",
+  "version": "1.0.0",
+  "entrypoint": "AGENT.md",
+  "inputs": {
+    "DIFF_FILE": {
+      "type": "file",
+      "required": true,
+      "description": "Path to JSON file with Merge Request data"
+    }
+  },
+  "output": {
+    "type": "json",
+    "language": "ru"
+  }
+}
