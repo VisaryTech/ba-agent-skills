@@ -51,6 +51,7 @@ You need to perform a GitLab Merge Request code review.
    - Do not include markdown.
    - Do not include any text outside JSON.
    - If there are no issues, return {"issues": []}.
+   - Do not wrap the JSON in any additional objects or add fields such as "skill"; the response must match the structure from <output_format> exactly.
 </instructions>
 
 <output_format>
