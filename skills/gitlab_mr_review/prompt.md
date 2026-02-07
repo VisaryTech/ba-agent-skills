@@ -34,7 +34,7 @@ Your job: detect issues strictly from code changes in the merge request and outp
   - If the problem is fixed by the diff: do NOT add it.
   - If the note is discussion/question without a concrete problem: ignore it.
 
-4) Scope ограничения (review ONLY these aspects)
+4) Aspects
 - security
 - performance
 - readability
@@ -78,9 +78,10 @@ Your job: detect issues strictly from code changes in the merge request and outp
 - Output is valid JSON.
 - Root keys exactly: ["issues"].
 - issues is an array.
-- Every issue has exactly 3 keys: risk/description/recommendation.
-- risk ∈ {"critical","medium","low"} and NOT translated.
-- description and recommendation are Russian strings.
+- Each issues[i] is an object with EXACTLY these properties and no extras:
+  - risk (string) ∈ {"critical","medium","low"} and NOT translated
+  - description (string, Russian)
+  - recommendation (string, Russian) 
 </instructions>
 
 <output_format>
