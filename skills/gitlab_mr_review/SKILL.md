@@ -62,8 +62,8 @@ Algorithm:
 
    * Each issue contains only:
      * risk: "critical" | "medium" | "low"
-     * description: English text
-     * recommendation: English text
+     * description: Russian text
+     * recommendation: Russian text
    * Each issue must be directly tied to the changes in the diff.
 
 6. Deduplication and sorting:
