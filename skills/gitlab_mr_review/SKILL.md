@@ -3,14 +3,26 @@ name: gitlab_mr_review
 description: GitLab Merge Request code review.
 ---
 
-You are a software developer and code reviewer.
-Your task is to perform a GitLab Merge Request code review.
-
-Inputs:
-- DIFF_FILE: path to a JSON file with Merge Request data
+Input: {{DIFF_JSON}} (JSON string).
 
 Rules:
-- Use changes[].diff as the primary source
-- notes are additional context only
-- Output ONLY valid JSON in Russian
-- No markdown and no text outside JSON
+
+* Parse the input as JSON. If parsing fails, return exactly one issue with risk="critical".
+* Analyze only changes[].diff.
+* If changes is missing, empty, or all diff values are empty, return exactly one issue with risk="medium".
+* Create issues only for: security, performance, readability, architecture, best practices, error handling.
+* Ignore database migrations and entity field deletion or renaming.
+* Each issue must contain only:
+  * risk: "critical" | "medium" | "low"
+  * description: Russian text
+  * recommendation: Russian text
+* Merge duplicates and sort issues by risk: critical → medium → low.
+* If no issues are found, return exactly {"issues":[]}.
+
+Output (strict):
+
+* Return only valid JSON.
+* No markdown or extra text.
+* Output must start with { and end with }.
+* The root object must contain only the key "issues".
+* Issue objects must contain only "risk","description","recommendation".
