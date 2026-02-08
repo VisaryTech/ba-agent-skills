@@ -5,9 +5,9 @@ description: Determine from the JSON file INCIDENT_FILE whether DevOps intervent
 
 ## Input
 
-### {{INCIDENT_FILE}}
-
-The file {{INCIDENT_FILE}} must be parsed as JSON with the following structure:
+The environment variable INCIDENT_FILE contains a path to a file.
+This file must be opened and its entire contents must be parsed as JSON
+with the following structure:
 
 ```json
 {
