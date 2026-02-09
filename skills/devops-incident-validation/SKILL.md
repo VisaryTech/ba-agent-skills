@@ -1,6 +1,6 @@
 ---
 name: devops-incident-validation
-description: Determine from the JSON file INCIDENT_FILE whether DevOps intervention is required
+description: Evaluate an incident description and determine whether it requires DevOps involvement
 ---
 
 ## Input

@@ -1,6 +1,6 @@
 ---
 name: gitlab_mr_review
-description: GitLab Merge Request code review based on DIFF_JSON.
+description: GitLab Merge Request code review.
 ---
 
 ## Input
