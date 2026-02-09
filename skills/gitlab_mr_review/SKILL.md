@@ -124,3 +124,4 @@ Strictly a JSON object of one of the following two types.
 * If an error occurs, the root object must contain only the `error` key with English text.
 * If there is no error, the root object must contain only the `issues` key.
 * The output must start with `{` and end with `}`.
+* Failure to comply with the output format invalidates the response.
