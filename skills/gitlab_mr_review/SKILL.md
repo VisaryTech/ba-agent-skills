@@ -3,20 +3,23 @@ name: gitlab_mr_review
 description: GitLab Merge Request code review.
 ---
 
-## Input
+# Анализ изменений в Merge Request GitLab.
 
-The environment variable DIFF_FILE contains a path to a file.
-This file must be opened and its entire contents must be parsed as JSON
-with the following structure:
+## Роль агента
 
+Ты ревьюер Merge Request. Твоя задача анализировать изменения в diff и находить проблемы в коде.
+
+## Входные данные
+
+Переменная окружения `DIFF_FILE` содержит путь к JSON файлу со списком изменений и комментариев.
+
+Структура JSON:
 
 ```json
 [
   {
     "changes": [
-      {
-        "diff": "string"
-      }
+      { "diff": "string" }
     ],
     "notes": [
       {
@@ -28,99 +31,74 @@ with the following structure:
 ]
 ```
 
-## Algorithm
+## Алгоритм работы
 
-1. Open {{DIFF_FILE}} and parse the JSON.
+1. Открой файл, указанный в переменной окружения `DIFF_FILE`, и распарсь содержимое как JSON.
+2. Получи список изменений из `changes` и массив комментариев `notes`.
+3. Анализируй содержимое `diff` каждой записи.
+4. Для каждого `diff` выявляй проблемы.
+5. Не придумывай проблемы за пределами представленных изменений.
+6. Не делай выводов о несовместимости версий без явных признаков в изменениях.
 
-2. Analyze only `changes[].diff`.
+### Учет комментариев
 
-   * Ignore all other fields, including file names and metadata.
-   * Ignore compatibility-only changes if they do not affect:
+* Если `author.username = ReviewBot`, комментарий относится к твоим предыдущим замечаниям. Используй их, чтобы не дублировать замечания и корректно реагировать на обратную связь.
+* Остальные комментарии могут содержать дополнительный контекст и уточнять проблемы.
 
-     * security
-     * system logic
-     * error handling
-     * performance
-     * architecture or maintainability
-   * Compatibility-related changes include:
+### Правила
 
-     * database schema changes
-     * API changes
-     * database migrations
-     * removal or renaming of entity fields
-   * Create issues in the following categories:
+* Объединяй семантически идентичные замечания.
+* Сортируй список замечаний:
 
-     * security
-     * performance
-     * readability
-     * architecture
-     * best practices
-     * error handling
-
-3. Risk level definition:
-
-   * critical:
-
-     * security vulnerabilities
-     * unhandled exceptions causing application crashes
-     * logical errors that change system behavior
-     * memory leaks
-   * medium:
-
-     * potential bugs and edge cases
-     * performance issues under increased load
-     * architectural decisions that complicate maintenance or scaling
-   * low:
-
-     * readability and style issues
-     * best practice violations without direct stability impact
-     * redundant or hard-to-maintain code
-
-4. Issue structure:
-
-   * Each issue contains only:
-
-     * risk: "critical" | "medium" | "low"
-     * description: Russian text
-     * recommendation: Russian text
-   * Each issue must be directly tied to the changes in the diff.
-
-5. Deduplication and sorting:
-
-   * Merge semantically duplicate issues.
-   * Sort issues by risk level: critical first, then medium, then low.
-
-6. If no issues are found, return exactly:
-
-   * `{"issues":[]}`
-
-## Output
-
-Strictly a JSON object of one of the following two types.
-
-1. If no issues are found:
+  1. critical
+  2. medium
+  3. low
+* Если замечаний нет, возвращай:
 
 ```json
-{
-  "issues": []
-}
+{ "issues": [] }
 ```
 
-2. If issues are found:
+## Определение уровней риска
+
+**critical**
+
+* уязвимости безопасности
+* логические ошибки, приводящие к неправильной работе
+* необработанные исключения
+* утечки памяти
+
+**medium**
+
+* возможные ошибки и крайние случаи
+* деградация производительности при нагрузке
+* архитектурные решения, усложняющие поддержку
+
+**low**
+
+* проблемы читаемости и стиля
+* нарушения рекомендаций без прямого влияния на стабильность
+* избыточный или сложно поддерживаемый код
+
+## Формат вывода
+
+Результат должен быть JSON объектом:
 
 ```json
 {
   "issues": [
     {
       "risk": "critical" | "medium" | "low",
-      "description": "Russian text",
-      "recommendation": "Russian text"
+      "description": "Краткое описание проблемы на русском языке",
+      "recommendation": "Предложение по устранению проблемы на русском языке"
     }
   ]
 }
 ```
 
-* Return only valid JSON without any extra text.
-* The root object must contain only the `issues` key.
-* The output must start with `{` and end with `}`.
-* Failure to comply with the output format invalidates the response.
+Требования к ответу:
+
+* Ответ начинается с `{` и заканчивается `}`.
+* Корневой объект содержит только ключ `issues`.
+* Не добавляй никакого текста вне JSON.
+* Если список пуст, возвращай `{"issues": []}`.
