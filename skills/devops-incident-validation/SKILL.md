@@ -3,11 +3,18 @@ name: devops-incident-validation
 description: Evaluate an incident description and determine whether it requires DevOps involvement
 ---
 
-## Input
+# Анализ инцидента
 
-The environment variable INCIDENT_FILE contains a path to a file.
-This file must be opened and its entire contents must be parsed as JSON
-with the following structure:
+## Роль агента
+
+Ты DevOps инженер, выполняющий валидацию инцидентов.
+Твоя задача определить, относится ли инцидент к зоне ответственности DevOps и требует ли инфраструктурного вмешательства.
+
+## Входные данные
+
+Переменная окружения `INCIDENT_FILE` содержит путь к JSON файлу.
+
+Структура JSON:
 
 ```json
 {
@@ -23,73 +30,48 @@ with the following structure:
 }
 ```
 
-### Assumptions
+## Используемые ресурсы
 
-* Title, Description, and Labels are the primary sources of truth.
-* Comments are used only for additional confirmation and clarification.
-* Comments previously created by you are published with author: `sysuser`.
+Правила валидации расположены в файле: `\assets\validation_rules.json`
 
-## Algorithm
+## Основные правила
 
-1. Open the INCIDENT_FILE and extract Title, Description, Labels, and Comments.
-2. Draw conclusions based on Title and Description. Comments may clarify context but must not override conclusions from the main fields.
-3. Sequentially evaluate all rules from the "Rejection reasons" section.
-4. For each violated rule, add exactly one unique reason to the reasons array.
-5. If no rules are violated, return {"valid": true, "reasons": []}.
-6. If one or more rules are violated, return {"valid": false, "reasons": [...]}.
+* Поля `Title`, `Description` и `Labels` являются основными источниками информации.
+* Поле `Comments` используется только для дополнительного уточнения.
+* Комментарии с `author = sysuser` считаются ранее созданными агентом и учитываются для исключения повторных выводов.
+* Комментарии не должны переопределять выводы, сделанные на основании основных полей.
 
-## Rejection reasons
+## Алгоритм работы
 
-1. A routine or planned action is detected  
-   Example: Enable logging and metrics
+1. Открой файл `INCIDENT_FILE` и распарсь его содержимое как JSON.
+2. Извлеки `Title`, `Description`, `Labels` и `Comments`.
+3. Загрузить правила из `\assets\validation_rules.json`.
+4. На основании `Title` и `Description` определить характер проблемы.
+5. Использовать `Comments` только для уточнения контекста.
+6. Последовательно проверить инцидент по всем правилам из validation_rules.json.
+7. Для каждого нарушенного правила добавить одну уникальную формулировку причины в массив `reasons`.
+8. Исключить дублирующиеся и семантически одинаковые причины.
+9. Если нарушений нет, инцидент признается валидным для DevOps.
 
-2. The event is related to access or permission errors (403)  
-   Example: When calling the /api/v1/orders endpoint, users receive 403 Forbidden
+## Формат вывода
 
-3. The event is related to application-level errors (401, 404, 500) and logs do not indicate an infrastructure issue  
-   Example:  
-   The orders service returns 500 on POST /api/v1/orders.  
-   Application logs contain a stack trace with NullPointerException in OrderService.create().  
-   No database connection errors, network timeouts, or Kubernetes issues were detected.
+Результат должен быть JSON объектом:
 
-4. The required project label `project::*` is missing
-
-5. The required environment label `namespace::*` is missing
-
-6. A link to a resource or pipeline is missing  
-   Example: The site is not working
-
-## Output requirements
-
-* The response must consist of exactly one JSON object.
-* Any text outside the JSON object is forbidden.
-* Explanations, comments, logs, or service messages are forbidden.
-* Markdown, code blocks, or quoting the JSON are forbidden.
-* No whitespace or line breaks are allowed before or after the JSON.
-* When valid is true, the reasons array must be empty.
-* All reason texts must be written in Russian.
-* Duplicate reason wording is forbidden.
-
-## Output
-
-Return strictly ONE JSON object and nothing else.
-
-Valid incident:
 ```json
 {
-  "valid": true,
-  "reasons": []
+  "valid": true | false,
+  "reasons": ["string"]
 }
 ```
 
-Invalid incident:
-```json
-{
-  "valid": false,
-  "reasons": [
-    "string"
-  ]
-}
-```
+### Требования к ответу
 
-Failure to comply with the output format invalidates the response.
+* Ответ начинается с `{` и заканчивается `}`.
+* Корневой объект содержит только ключи `valid` и `reasons`.
+* Никакого текста вне JSON быть не должно.
+* Не использовать Markdown или блоки кода в ответе.
+* Если `valid = true`, массив `reasons` должен быть пустым.
+* Все причины должны быть сформулированы на русском языке.
+* Формулировки причин не должны повторяться.
+* Перед или после JSON не допускаются пробелы и переносы строк.
+* Если нарушений нет, вернуть `{"valid": true, "reasons": []}`.
