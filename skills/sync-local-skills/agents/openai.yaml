@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sync Local Skills"
+  short_description: "Install or update all project skills at once"
+  default_prompt: "Use $sync-local-skills to install or update every skill from the local skills folder into ~/.codex/skills."
