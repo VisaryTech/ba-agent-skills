@@ -28,6 +28,7 @@ python scripts/get_task_data.py --url "https://erp.visary.cloud/tasktracker/proj
 
 ## Требования к устойчивости
 
+- Используй `.env` или переменные окружения `erp_client_id` и `erp_client_secret`.
 - Для получения задачи используй только `scripts/get_task_data.py`.
 - Не подставляй значения вручную при ошибках API или авторизации.
 - Завершай выполнение с явной причиной при критических ошибках (token/task fetch).
