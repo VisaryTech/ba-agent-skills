@@ -1,6 +1,6 @@
 ---
 name: tasktracker-ready-to-dev
-description: Оркестрация проверки готовности задачи ERP TaskTracker к разработке: чтение задачи через tasktracker-read-task, публикация замечаний через tasktracker-comment-task и генерация плана /tasks/{TaskId}.md при успешной проверке. Использовать, когда пользователь просит проверить задачу TaskTracker по ссылке или сформировать технический план реализации по задаче.
+description: "Оркестрация проверки готовности задачи ERP TaskTracker к разработке: чтение задачи через tasktracker-read-task, публикация замечаний через tasktracker-comment-task и генерация плана /tasks/{TaskId}.md при успешной проверке. Использовать, когда пользователь просит проверить задачу TaskTracker по ссылке или сформировать технический план реализации по задаче."
 ---
 
 # TaskTracker Autocheck Plan
