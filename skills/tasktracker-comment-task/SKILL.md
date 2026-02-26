@@ -24,24 +24,27 @@ description: Публикация комментария в задачу ERP Tas
 Опубликовать комментарий строкой:
 
 ```bash
-python scripts/post_task_comment.py --task-id "12345" --text "Текст комментария"
+python C:/Users/<user>/.codex/skills/tasktracker-comment-task/scripts/post_task_comment.py --task-id "12345" --text "Текст комментария"
 ```
 
 Опубликовать комментарий из файла:
 
 ```bash
-python scripts/post_task_comment.py --task-id "12345" --text-file "comment.md"
+python C:/Users/<user>/.codex/skills/tasktracker-comment-task/scripts/post_task_comment.py --task-id "12345" --text-file "comment.md"
 ```
 
 Опубликовать комментарий в другом ERP-контуре:
 
 ```bash
-python scripts/post_task_comment.py --base-url "https://erp.example.cloud" --task-id "12345" --text "Текст комментария"
+python C:/Users/<user>/.codex/skills/tasktracker-comment-task/scripts/post_task_comment.py --base-url "https://erp.example.cloud" --task-id "12345" --text "Текст комментария"
 ```
+
+Запускать команду с `workdir` в корень пользовательского проекта (где находится `.env`), а не из директории skill.
 
 ## Требования к устойчивости
 
 - Используй `.env` или переменные окружения `erp_client_id` и `erp_client_secret`.
+- Загружай `.env` из корня пользовательского проекта через корректный `workdir`; не запускай из директории skill.
 - Не отправляй пустой комментарий.
 - При ошибке API явно показывай код/причину и останавливай выполнение.
 - Не выдумывай `taskId`: используй ID, который дал пользователь.
